@@ -1,0 +1,7 @@
+---
+
+- name: Configure proxy and registry
+  hosts: all
+  roles:
+    - traefik-install
+    - registry-install

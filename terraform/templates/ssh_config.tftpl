@@ -1,0 +1,9 @@
+%{ for i, ip in servers ~}
+Host ${format("server-%d", i)}
+    User ${username}
+    IdentityFile ${private_key}
+    Hostname ${ip}
+    IdentitiesOnly yes
+    StrictHostKeyChecking no
+    UserKnownHostsFile /dev/null
+%{ endfor ~}

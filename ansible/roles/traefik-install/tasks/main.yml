@@ -1,0 +1,28 @@
+- name: Create directory for traefik
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/traefik
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  when: inventory_hostname == 'server-0'
+
+- name: Copy docker-compose.yml to server-0
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: /home/{{ ansible_user }}/traefik/docker-compose.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  when: inventory_hostname == 'server-0'
+
+- name: Remove traefik stack
+  ansible.builtin.command: docker stack rm traefik
+  become: true
+  ignore_errors: true
+  when: inventory_hostname == 'server-0'
+
+- name: Run docker-compose.yml on server-0
+  ansible.builtin.command: docker stack deploy --compose-file /home/{{ ansible_user }}/traefik/docker-compose.yml traefik
+  become: true
+  when: inventory_hostname == 'server-0'

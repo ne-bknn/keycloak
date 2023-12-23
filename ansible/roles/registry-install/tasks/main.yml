@@ -1,0 +1,6 @@
+- name: Run registry service
+  ansible.builtin.command: docker service create --name registry --publish published=5000,target=5000 registry:2
+  become: true
+  when: inventory_hostname == 'server-0'
+  failed_when: false
+  ignore_errors: true

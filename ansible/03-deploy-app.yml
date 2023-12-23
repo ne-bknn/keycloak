@@ -1,0 +1,6 @@
+---
+
+- name: Install keycloak
+  hosts: all
+  roles:
+    - keycloak-install

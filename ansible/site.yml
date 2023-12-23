@@ -1,0 +1,10 @@
+# install docker, init swarm
+
+- name: Initialize infrastructure
+  hosts: all
+  roles:
+    - docker-install
+    - swarm-init
+    - traefik-install
+    - registry-install
+    - keycloak-install

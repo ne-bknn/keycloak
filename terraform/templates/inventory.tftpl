@@ -1,0 +1,24 @@
+${yamlencode({
+  "all": {
+    "children": {
+      "infra": {
+        "hosts": {
+        },
+       "children": {
+        "servers": {
+            "hosts": {
+            for i, ip in servers : "${ format("server-%d", i) }" =>
+                {
+                    "ansible_host": "${ip}",
+                    "ansible_user": "${username}",
+                    "ansible_ssh_private_key_file": "${private_key}",
+                    "ansible_ssh_common_args": "-o StrictHostKeyChecking=no -o IdentitiesOnly=yes",
+                    "ansible_python_interpreter": "/usr/bin/python3",
+                    "fqdn": "${ format("server-%d.bakunin.me", i+1) }",
+                }
+            }
+        },
+        }
+        }
+      }
+}})}

@@ -1,0 +1,49 @@
+- name: Create directory for keycloak
+  ansible.builtin.file:
+    path: /home/{{ ansible_user }}/keycloak
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+  when: inventory_hostname == 'server-0'
+
+- name: Copy docker-compose.yml to server-0
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: /home/{{ ansible_user }}/keycloak/docker-compose.yml
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  when: inventory_hostname == 'server-0'
+
+- name: Copy Dockerfile to server-0
+  ansible.builtin.copy:
+    src: Dockerfile
+    dest: /home/{{ ansible_user }}/keycloak/Dockerfile
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0644"
+  when: inventory_hostname == 'server-0'
+
+- name: Remove keycloak stack
+  ansible.builtin.command: docker stack rm keycloak
+  become: true
+  ignore_errors: true
+  when: inventory_hostname == 'server-0'
+
+- name: Build custom keycloak
+  ansible.builtin.command: docker compose --project-directory /home/{{ ansible_user }}/keycloak build
+  become: true
+  when: inventory_hostname == 'server-0'
+
+- name: Push stack to registry
+  ansible.builtin.command: docker compose --project-directory /home/{{ ansible_user }}/keycloak push
+  become: true
+  when: inventory_hostname == 'server-0'
+
+- name: Run docker-compose.yml on server-0
+  ansible.builtin.command: docker stack deploy --compose-file /home/{{ ansible_user }}/keycloak/docker-compose.yml keycloak
+  become: true
+  when: inventory_hostname == 'server-0'
+  retries: 10
+  delay: 2
